@@ -1,22 +1,33 @@
-walk_speed =
+walk_speed = 0.720  // seconds per meter at 5 km/h
+walk_penalty = 0 // seconds
 walkable_limit = 2000;
 walkable_crow_multiplier = 1.1;
 
+cycle_speed = 0.240  // seconds per meter at 15 km/h
+cycle_penalty = 120 // lock/unlock, clothes/ in seconds
 cycleable_limit = 6000;
 cycleable_crow_multiplier = 1.2;
 
+drive_speed =  0.138 // seconds per meter at  at 26 km/h
+drive_penalty = 300 // start/stop parking
 drive_crow_multiplier = 1.5;
 
 function updateDistances(from, to) {
+
+    realDriveData(from, to);
+
     var asCrowFlies = from.distanceTo(to);
 
     var walk_distance = asCrowFlies * walkable_crow_multiplier;
     var walkable = walk_distance <= walkable_limit;
+    var walk_time = walk_distance * walk_speed + walk_penalty;  // in s
 
     var cycle_distance = asCrowFlies * cycleable_crow_multiplier;
     var cyclable = cycle_distance <= cycleable_limit;
+    var cycle_time = cycle_distance * cycle_speed + cycle_penalty;  // in s
 
     var drive_distance = asCrowFlies * drive_crow_multiplier;
+    var drive_time = drive_distance * drive_speed + drive_penalty;  // in s
 
     console.log({
         "crow": asCrowFlies,
@@ -27,6 +38,31 @@ function updateDistances(from, to) {
         "drive_distance": drive_distance,
         }
     );
+
+    console.log({
+        "walk_time": walk_time / 60,
+        "cycle_time": cycle_time / 60,
+        "drive_time": drive_time / 60,
+    })
+}
+
+
+function realDriveData(from, to) {
+    var res;
+    $.ajax("//router.project-osrm.org/viaroute",
+        {
+            dataType: "json",
+            processData: false,
+            async: false,
+            data: "loc=" + from.lat + ',' + from.lng + "&loc="+to.lat + ',' + to.lng,
+            success: function(data) {
+                res = data;
+            }
+        }
+    )
+    debug = res;
+    console.log(res);
+    return res;
 }
 
 var map = L.map('map');
