@@ -1,3 +1,34 @@
+walk_speed =
+walkable_limit = 2000;
+walkable_crow_multiplier = 1.1;
+
+cycleable_limit = 6000;
+cycleable_crow_multiplier = 1.2;
+
+drive_crow_multiplier = 1.5;
+
+function updateDistances(from, to) {
+    var asCrowFlies = from.distanceTo(to);
+
+    var walk_distance = asCrowFlies * walkable_crow_multiplier;
+    var walkable = walk_distance <= walkable_limit;
+
+    var cycle_distance = asCrowFlies * cycleable_crow_multiplier;
+    var cyclable = cycle_distance <= cycleable_limit;
+
+    var drive_distance = asCrowFlies * drive_crow_multiplier;
+
+    console.log({
+        "crow": asCrowFlies,
+        "walk_distance": walk_distance,
+        "walkable": walkable,
+        "cycle_distance": cycle_distance,
+        "cyclable": cyclable,
+        "drive_distance": drive_distance,
+        }
+    );
+}
+
 var map = L.map('map');
 map.locate({setView: true, maxZoom: 13});
 
@@ -30,11 +61,13 @@ function onMapClick(e) {
         return
     }
     to = L.marker(e.latlng).addTo(map);
-    var crowDistance =  home.getLatLng().distanceTo(e.latlng);
-    console.log(crowDistance);
+
+    updateDistances(home.getLatLng(), e.latlng);
 }
 
 map.on('click', onMapClick);
+
+
 
 
 

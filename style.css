@@ -1,21 +1,22 @@
- body {
-            padding: 0;
-            margin: 0;
-        }
-        html, body {
-            height: 100%;
-        }
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body {
+    height: 100%;
+}
 
-        #map {
-            height: 100%;
-            width: 80%;
-        }
+#map {
+    height: 100%;
+    width: 80%;
+}
 
-        #results {
-            position: fixed;
-            right: 0px;
-            top: 0px;
-            width: 20%;
-            height: 100%;
-            background-color: #777;
-        }
+#results {
+    color: #eee;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    width: 20%;
+    height: 100%;
+    background-color: #777;
+}
