@@ -68,6 +68,7 @@ function updateRealDriveData(from, to) {
                     scope.real_drive_distance = data.route_summary.total_distance
                     distance = scope.real_drive_distance
                     scope.real_drive_time = ((distance * drive_speed) + drive_penalty) / 60
+                    scope.yearly_time = yearlyCost(scope.real_drive_time) / 60
                     scope.yearly_distance = yearlyCost(distance) / 1000.0;
                     scope.yearly_cost = drive_cost_per_km * scope.yearly_distance
                 })

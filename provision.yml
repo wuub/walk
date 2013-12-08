@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+    - apt: name={{ item }}
+      with_items:
+        - nginx
+    - shell: rm -rf /usr/share/nginx/html
+    - file: state=link dest=/usr/share/nginx/html src=/vagrant
+    - service: name=nginx state=restarted
