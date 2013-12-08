@@ -11,7 +11,18 @@ html, body {
     width: 80%;
 }
 
+
+.yes {
+    color: #0f0;
+}
+
+.no {
+    color: #f00;
+}
+
 #results {
+    box-sizing: border-box;
+    padding: 1em;
     color: #eee;
     position: fixed;
     right: 0px;

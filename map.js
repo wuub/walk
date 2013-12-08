@@ -11,26 +11,33 @@ cycleable_crow_multiplier = 1.2;
 drive_speed =  0.138 // seconds per meter at  at 26 km/h
 drive_penalty = 300 // start/stop parking
 drive_crow_multiplier = 1.5;
+drive_liters_p100km = 10
+drive_cost_per_km = drive_liters_p100km * 5.29 / 100.0
+
+
+function yearlyCost(value) {
+    days = 20 * 12
+    yearlyValue = days * (value * 2)
+    return yearlyValue
+}
 
 function updateDistances(from, to) {
+    updateRealDriveData(from, to)
+    var distance = from.distanceTo(to);
 
-    realDriveData(from, to);
-
-    var asCrowFlies = from.distanceTo(to);
-
-    var walk_distance = asCrowFlies * walkable_crow_multiplier;
+    var walk_distance = distance * walkable_crow_multiplier;
     var walkable = walk_distance <= walkable_limit;
     var walk_time = walk_distance * walk_speed + walk_penalty;  // in s
 
-    var cycle_distance = asCrowFlies * cycleable_crow_multiplier;
+    var cycle_distance = distance * cycleable_crow_multiplier;
     var cyclable = cycle_distance <= cycleable_limit;
     var cycle_time = cycle_distance * cycle_speed + cycle_penalty;  // in s
 
-    var drive_distance = asCrowFlies * drive_crow_multiplier;
+    var drive_distance = distance * drive_crow_multiplier;
     var drive_time = drive_distance * drive_speed + drive_penalty;  // in s
 
     console.log({
-        "crow": asCrowFlies,
+        "crow": distance,
         "walk_distance": walk_distance,
         "walkable": walkable,
         "cycle_distance": cycle_distance,
@@ -44,25 +51,47 @@ function updateDistances(from, to) {
         "cycle_time": cycle_time / 60,
         "drive_time": drive_time / 60,
     })
+
+
+    var el = document.getElementById('results');
+    var scope = angular.element(el).scope()
+    scope.$apply(function(){
+        scope.from = from
+        scope.to = to
+        scope.walkable = walkable
+        scope.cyclable = cyclable
+        scope.distance = distance
+        scope.walk_distance = walk_distance
+        scope.cycle_distance = cycle_distance
+        scope.drive_distance = drive_distance
+        scope.walk_time = walk_time / 60
+        scope.cycle_time = cycle_time / 60
+        scope.drive_time = drive_time / 60
+    })
 }
 
 
-function realDriveData(from, to) {
-    var res;
+function updateRealDriveData(from, to) {
     $.ajax("//router.project-osrm.org/viaroute",
         {
             dataType: "json",
             processData: false,
-            async: false,
+            // async: false,
             data: "loc=" + from.lat + ',' + from.lng + "&loc="+to.lat + ',' + to.lng,
             success: function(data) {
-                res = data;
+                console.log(data)
+                var el = document.getElementById('results');
+                var scope = angular.element(el).scope()
+                scope.$apply(function(){
+                    scope.real_drive_distance = data.route_summary.total_distance
+                    distance = scope.real_drive_distance
+                    scope.real_drive_time = ((distance * drive_speed) + drive_penalty) / 60
+                    scope.yearly_distance = yearlyCost(distance) / 1000.0;
+                    scope.yearly_cost = drive_cost_per_km * scope.yearly_distance
+                })
             }
         }
     )
-    debug = res;
-    console.log(res);
-    return res;
 }
 
 var map = L.map('map');
@@ -74,6 +103,16 @@ L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
     }
 ).addTo(map);
+
+
+new L.Control.GeoSearch({
+    provider: new L.GeoSearch.Provider.Google({
+        region: 'PL'
+    }),
+    showMarker: false
+}).addTo(map);
+
+
 
 var home = undefined;
 var to = undefined;
@@ -101,6 +140,13 @@ function onMapClick(e) {
     updateDistances(home.getLatLng(), e.latlng);
 }
 
+
+map.on("geosearch_foundlocations", function(data){
+    var click = L.latLng(data.Locations[0].Y, data.Locations[0].X);
+    var e = {'latlng': click}
+    console.log(e)
+    onMapClick(e)
+})
 map.on('click', onMapClick);
 
 
