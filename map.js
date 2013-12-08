@@ -36,23 +36,6 @@ function updateDistances(from, to) {
     var drive_distance = distance * drive_crow_multiplier;
     var drive_time = drive_distance * drive_speed + drive_penalty;  // in s
 
-    console.log({
-        "crow": distance,
-        "walk_distance": walk_distance,
-        "walkable": walkable,
-        "cycle_distance": cycle_distance,
-        "cyclable": cyclable,
-        "drive_distance": drive_distance,
-        }
-    );
-
-    console.log({
-        "walk_time": walk_time / 60,
-        "cycle_time": cycle_time / 60,
-        "drive_time": drive_time / 60,
-    })
-
-
     var el = document.getElementById('results');
     var scope = angular.element(el).scope()
     scope.$apply(function(){
@@ -79,7 +62,6 @@ function updateRealDriveData(from, to) {
             // async: false,
             data: "loc=" + from.lat + ',' + from.lng + "&loc="+to.lat + ',' + to.lng,
             success: function(data) {
-                console.log(data)
                 var el = document.getElementById('results');
                 var scope = angular.element(el).scope()
                 scope.$apply(function(){
@@ -132,7 +114,6 @@ function onMapClick(e) {
                 to = undefined;
             }
         })
-        console.log(e)
         return
     }
     to = L.marker(e.latlng).addTo(map);
@@ -144,7 +125,6 @@ function onMapClick(e) {
 map.on("geosearch_foundlocations", function(data){
     var click = L.latLng(data.Locations[0].Y, data.Locations[0].X);
     var e = {'latlng': click}
-    console.log(e)
     onMapClick(e)
 })
 map.on('click', onMapClick);
