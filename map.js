@@ -149,27 +149,3 @@ map.on("geosearch_foundlocations", function(data){
 })
 map.on('click', onMapClick);
 
-
-
-
-
-// $.ajax("//router.project-osrm.org/nearest",
-//     {
-//         dataType: "json",
-//         processData: false,
-//         data: "loc=" + e.latlng.lat + ',' + e.latlng.lng,
-//         success: function(e,f) {console.log(e, f);}
-//     }
-// )
-
-// $.ajax("//router.project-osrm.org/viaroute",
-//         {
-//             dataType: "json",
-//             processData: false,
-//             data: "loc=" + home.getLatLng().lat + ',' + home.getLatLng().lng + "&loc="+e.latlng.lat + ',' + e.latlng.lng,
-//             success: function(data) {
-
-//                 to = L.marker(e.latlng).addTo(map);
-//             }
-//         }
-// )
